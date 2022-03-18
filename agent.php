@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	<script src="./assets/js/jquery-3.3.1.min.js"></script>
-	<script src="./assets/js/jquery.mask.js"></script>
+	<script src="./assets/js/jquery-3.6.0.min.js"></script>
+	<script src="./assets/js/jquery.mask.min.js"></script>
 	<script src="./assets/js/md5.min.js"></script>
 	<style type="text/css">
 		@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300);
@@ -168,7 +168,7 @@ require("./DB/conn.php");
 
 
 
-$result = $conn->query("SELECT c.id_cliente, c.tx_nome AS cliente, cu.tx_nome, cu.id_usuario FROM cliente_usr AS cu INNER JOIN cliente AS c ON cu.id_cliente = c.id_cliente WHERE cu.tx_email = '".$login."' AND cu.tx_password = '".$senha."'");
+$result = $conn->query("SELECT c.id_cliente, c.tx_nome AS cliente, cu.tx_nome, cu.id_usuario, cu.nb_category_user FROM cliente_usr AS cu INNER JOIN cliente AS c ON cu.id_cliente = c.id_cliente WHERE cu.tx_email = '".$login."' AND cu.tx_password = '".$senha."'");
 						
 
 
@@ -179,12 +179,14 @@ if($result->rowCount() == 1 )
 	$cliente = $row->cliente;
 	$cuid = $row->id_usuario;
 	$login = $row->tx_nome;
+	$usertype = $row->nb_category_user;
 	
 	};
 	$_SESSION['login'] = $login;
 	$_SESSION['cliente'] = $cliente;
 	$_SESSION['userid'] = $uid;
 	$_SESSION['cuserid'] = $cuid;
+	$_SESSION['usertype'] = $usertype;
 	$_SESSION['catuser'] = 1;
 	
 	header('Location: sistema.php');
@@ -197,6 +199,7 @@ unset ($_SESSION['login']);
 unset ($_SESSION['userid']);
 unset ($_SESSION['cliente']);
 unset ($_SESSION['catuser']);
+unset ($_SESSION['usertype']);
 
 session_destroy();
 

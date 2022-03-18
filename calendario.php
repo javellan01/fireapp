@@ -30,7 +30,7 @@
 	  .fc-day-top {color: #09568d;}
 	  .fc-day-header {color: #09568d;}
     </style>
-		<script src="./assets/js/jquery-3.3.1.min.js"></script>
+		<script src="./assets/js/jquery-3.6.0.min.js"></script>
 		<script src="./assets/js/jquery-ui.min.js"></script>
 		<script src="./assets/js/jquery.ajax.form.js"></script>
 		<script src="./assets/js/jquery.mask.min.js"></script>

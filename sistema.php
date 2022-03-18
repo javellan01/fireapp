@@ -32,7 +32,7 @@
 	  .fc-day-header {color: #09568d;}
 	  th {font-weight: normal;}
     </style>
-		<script src="./assets/js/jquery-3.3.1.min.js"></script>
+		<script src="./assets/js/jquery-3.6.0.min.js"></script>
 		<script src="./assets/js/jquery-ui.min.js"></script>
 		<script src="./assets/js/jquery.ajax.form.js"></script>
 		<script src="./assets/js/jquery.mask.min.js"></script>
@@ -63,6 +63,7 @@
 </head>
 <?php 
 	require("./DB/conn.php");
+	require("./controller/sistemaController.php");
 	$cnpj = $_SESSION['login'];
 	$uid = $_SESSION['userid'];
 	$cliente = $_SESSION['cliente'];
@@ -187,20 +188,26 @@ echo" <div class='container-fluid'>
 	else{  
 		echo"<h4><cite> Pedidos disponíveis para consulta: </cite></h4>";
 		while($row = $stmt->fetch(PDO::FETCH_OBJ)){
-			
+			$fisico = getProgressoFisico($conn,$row->id_pedido);
+
 			echo "<div class='progress-group'>";
 			  if($row->cs_estado == 0) 
 					echo "<div class='progress-group-header align-items-end' style='color: #27b;'><div><a class='btn btn-ghost-primary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Ativo)</strong></a></div>";
 			  if($row->cs_estado == 1) 
 					echo "<div class='progress-group-header align-items-end' style='color: #777;'><div><a class='btn btn-ghost-secondary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Encerrado)</strong></a></div>";
 			  
-			  echo "<div class='ml-auto'>Progresso: (" . $row->percent ."%) - ";
+					echo "<div class='ml-auto'>Atividades Concluídas: " . $fisico->execpercent ."%</div></div>";
+					echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
+					echo "<div class='progress-bar progress-bar-striped bg-warning' role='progressbar' style='width: ". $fisico->execpercent ."%' aria-valuenow='". $fisico->execpercent ."' aria-valuemin='0' aria-valuemax='100'>". $fisico->execpercent ."%</div></div>";	
+
+			  echo "<div class='ml-auto'>Financeiro: (" . $row->percent ."%) - ";
 			  echo "R$ " . moeda($row->medido_total) . " / " . moeda($row->nb_valor) . "</div></div>";
 			  echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
 			  echo "<div class='progress-bar progress-bar-striped bg-success' role='progressbar' style='width: ". $row->percent ."%' aria-valuenow='". $row->percent ."' aria-valuemin='0' aria-valuemax='100'>". $row->percent ."%</div>
 			  </div>
 			  </div>
-			<p class='mb-0 mt-1 ml-2'><cite> Resp. FireSystems: ".$row->tx_name." - Resp. Cliente: ".$row->tx_nome."</cite></p>
+			  </div>
+			<p class='mb-0 mt-1 ml-auto'><cite> Resp. FireSystems: ".$row->tx_name." - Resp. Cliente: ".$row->tx_nome."</cite></p>
 			<p class='mb-0 mt-1 ml-auto'><cite>Local: ".$row->tx_local."</cite></p>
 		</div>";
 		}
@@ -221,7 +228,7 @@ $stmt0 = null;
 	<footer class="app-footer">
 		<div>
 		<a href="http://www.firesystems-am.com.br">Fire Systems</a>
-		<span>© 2018 Produtos e Serviços Contra Incêndio</span>
+		<span>© 2018-2022 Produtos e Serviços Contra Incêndio</span>
 		</div>
 		<div class="ml-auto">
 		<span>Sistema de Gerenciamento Online</span>
