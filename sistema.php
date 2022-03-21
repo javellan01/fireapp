@@ -144,9 +144,8 @@
 
 <?php
 	if($_SESSION['catuser'] == 0){
-	$stmt = $conn->prepare("UPDATE cliente SET last_access = current_timestamp() WHERE id_cliente = :uid");	
-	$stmt->bindParam(':uid', $uid);
-	$stmt->execute();	
+	clienteLastAccess($conn,$uid);
+	//getPedidosCliente($conn,$uid);
 	$stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
 							INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente
 							INNER JOIN cliente_usr AS cu ON p.id_cliente_usr = cu.id_usuario
@@ -157,9 +156,8 @@
 	// Carrega os pedidos e coloca nos cards MODO USER
 	if($_SESSION['catuser'] == 1){
 	$cuid = $_SESSION['cuserid'];
-	$stmt = $conn->prepare("UPDATE cliente_usr SET last_access = current_timestamp() WHERE id_usuario = :cuid");	
-	$stmt->bindParam(':cuid', $cuid);
-	$stmt->execute();
+	usrclienteLastAccess($conn,$cuid);
+	//getPedidosUsrCliente($conn,$uid,$cuid);
 	$stmt = null;
 	$stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
 							INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente

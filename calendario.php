@@ -175,7 +175,7 @@
 	<footer class="app-footer">
 		<div>
 		<a href="http://www.firesystems-am.com.br">Fire Systems</a>
-		<span>© 2018 Produtos e Serviços Contra Incêndio</span>
+		<span>© 2018-2022 Produtos e Serviços Contra Incêndio</span>
 		</div>
 		<div class="ml-auto">
 		<span>Sistema de Gerenciamento Online</span>

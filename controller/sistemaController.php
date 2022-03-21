@@ -1,5 +1,52 @@
 <?php
 
+function clienteLastAccess($conn,$uid){
+    $stmt = $conn->prepare("UPDATE cliente SET last_access = current_timestamp() WHERE id_cliente = :uid");	
+
+	$stmt->bindParam(':uid', $uid);
+
+	$stmt->execute();	
+
+}
+
+function usrclienteLastAccess($conn,$cuid){
+    $stmt = $conn->prepare("UPDATE cliente_usr SET last_access = current_timestamp() WHERE id_usuario = :cuid");
+
+	$stmt->bindParam(':cuid', $cuid);
+
+	$stmt->execute();
+
+}
+
+function getPedidosCliente($conn,$uid){
+    $stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
+                        INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente
+                        INNER JOIN cliente_usr AS cu ON p.id_cliente_usr = cu.id_usuario
+                        INNER JOIN usuario AS u ON p.id_usu_resp = u.id_usuario
+                        INNER JOIN v_sum_pedido_total AS v ON p.id_pedido = v.id_pedido
+                        WHERE p.id_cliente = $uid ORDER BY p.tx_codigo ASC;");
+
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+    return $data;
+
+}
+
+function getPedidosUsrCliente($conn,$uid,$cuid){
+$stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
+                    INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente
+                    INNER JOIN cliente_usr AS cu ON p.id_cliente_usr = cu.id_usuario
+                    INNER JOIN usuario AS u ON p.id_usu_resp = u.id_usuario
+                    INNER JOIN v_sum_pedido_total AS v ON p.id_pedido = v.id_pedido
+                    WHERE p.id_cliente = $uid AND p.id_cliente_usr = $cuid ORDER BY p.tx_codigo ASC;");
+                    
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+    return $data;
+
+}
+
+
 function getProgressoFisico($conn,$pid){
     $stmt = $conn->query("SELECT vs.id_pedido, FORMAT(((SUM(vs.progresso) / tb.total) *100),1) as execpercent
     FROM v_categoria_sums vs 
