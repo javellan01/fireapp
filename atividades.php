@@ -238,12 +238,16 @@ while($row1 = $stmt1->fetch(PDO::FETCH_OBJ)){
 		while($row = $stmt2->fetch(PDO::FETCH_OBJ)){
 		if($row->cs_finalizada	== 1) $encerradas += 1;	
 		if($row->valor_sum == null) $row->valor_sum = 0;
+		if($row->nb_valor == 0 || $row->nb_valor == null){
+			$execpercent = '0.0';
+			$medpercent = '0.0';
+		}else{
 		$execpercent = ($row->progresso / $row->nb_valor) * 100;
 		$execpercent = round($execpercent,1);
 		
 		$medpercent = ($row->valor_sum / $row->nb_valor) * 100;
 		$medpercent = round($medpercent,1);	
-	
+		}	
 		$balpercent = $execpercent - $medpercent;
 		
 		if($balpercent < 0) $balpercent = 0;

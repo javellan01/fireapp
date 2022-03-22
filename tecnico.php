@@ -70,7 +70,7 @@
 				<li class="nav-item px-3">
 				<?php
 				if($_SESSION['catuser'] == 0) echo "<a class='nav-link text-warning' style='font-weight: 500;' href=''><i class='nav-icon'><img src='./img/logo/".substr($_SESSION['cliente'],0,3).".png' height='35'></i>".$_SESSION['cliente']."</a>";
-				if($_SESSION['catuser'] == 1) echo "<a class='nav-link text-warning' style='font-weight: 500;' href=''><i class='nav-icon'><img src='./img/logo/".substr($_SESSION['cliente'],0,3).".png' height='35'></i>".$_SESSION['login']."</a>";
+				if($_SESSION['catuser'] == 1) echo "<a class='nav-link text-warning' style='font-weight: 500;' href=''><i class='nav-icon'><img src='./img/logo/".substr($_SESSION['cliente'],0,3).".png' height='35'></i><span> </span><i class='nav-icon cui-user'></i><span> </span>".$_SESSION['login']."</a>";
 				?>
 				</li>
 			</ul>
@@ -104,7 +104,7 @@
 			  </li>
 			  <li class="nav-item">
 				<a class="nav-link text-light" href="tecnico.php">
-				  <i class="nav-icon cui-calendar"></i>Técnico
+				  <i class="nav-icon cui-file"></i>Técnico
 				</a>
 			  </li>
 			</ul>

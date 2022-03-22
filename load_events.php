@@ -80,7 +80,7 @@ if(!isset($_SESSION["login"]) || !isset($_SESSION["userid"]))
 							$color = cat_color($row->id_categoria);
 							$status = 'Ativa';
 							}
-						$url = "javascript:atvPhp(".$row->id_pedido.")";
+						$url = "#";
 						$periodo = 'Início: '.data_usql($row->dt_inicio).' - Término: '.data_usql($row->dt_fim);
 						
 						echo "{ title: '".$row->tx_descricao."', start:'".$row->dt_inicio."', end:'".$row->dt_fim."T18:00:00',url:'".$url."', color:'".$color."', status:'".$status."', pedido:'".$row->tx_codigo."', categoria:'".$row->tx_nome."', periodo:'".$periodo."', allDay: false},";
