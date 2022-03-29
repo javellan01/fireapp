@@ -55,7 +55,7 @@
 			  eventRender: function(eventObj, $el) {
 				  $el.popover({
 					title: eventObj.title+', Pedido: '+eventObj.pedido,
-					content: eventObj.periodo,
+					content: 'Status: '+eventObj.status+', '+eventObj.periodo,
 					trigger: 'hover',
 					placement: 'top',
 					container: 'body'

@@ -235,15 +235,10 @@
 			">
 			
 			<h1>Gerenciamento de Pedidos Online</h1>
-			<p>Favor logar com CNPJ ou E-mail para acessar o sistema</p>
+			<p>Favor logar com E-mail para acessar o sistema</p>
 			
 			<form class="acessoOnline" autocomplete="on" method="POST" action="agent.php">
-				<div>
-					<label class="error" id="usuario_erro" for="usuario"></label>
-					<input type="text" name="usuario" id="usuario" placeholder="CNPJ" autocomplete="nope" />
-			
-					
-				</div>
+				
 				<div>
 					<label class="error" id="email_erro" for="email"></label>
 					<input type="text" name="email" id="email" placeholder="email@exemplo.com" autocomplete="nope" />
@@ -269,23 +264,9 @@
 			</div>
 		</div>
 	</div>
+
 	<script type="text/javascript">
-	function formProc() {
-			var xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-			document.getElementById("process").innerHTML = this.responseText;
-			}
-			};
-			
-			xhttp.open("GET", "process.php?"+formData, true);
-			xhttp.send();
-			}
-	</script>
-	<script type="text/javascript">
-		$(document).ready(function(){
-		    $('#usuario').mask('00.000.000/0000-00');
-			
+	
 		$('.error').hide();
 		$(".login-button").submit(function(event){
 

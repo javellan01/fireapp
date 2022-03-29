@@ -142,7 +142,7 @@ $stmt0 = null;
 	</div>
 	<div class="form-row">		
 	  <div class="form-group col-8">
-		<label for="formCPF">CPF:<span class='text-danger'>*</span></label>
+		<label for="formCPF">CPF: <span class='text-danger'>*</span></label>
 		<input type="text" class="form-control" id="formCPF" name="CPF" value="<?php echo $cpf; ?>" disabled>
 	  </div>  
 	</div> 
