@@ -75,7 +75,7 @@ echo"<div class='accordion border border-danger rounded-top mb-3' id='accordion'
 		<div class='card mb-0'>
 			<div class='card-header' id='headingMedicao'>
 				<h5 class='mb-0'>
-				<button type='button' class='btn btn-outline-danger float-left'  data-toggle='collapse' data-target='#collapseMedicao' aria-expanded='true' aria-controls='collapseMedicao'>Medições Cadastradas
+				<button type='button' class='btn btn-outline-danger float-left'  data-toggle='collapse' data-target='#collapseMedicao' aria-expanded='true' aria-controls='collapseMedicao'>Medições Cadastradas <i class='nav-icon cui-chevron-bottom'></i>
 				</button>
 				</h5>
 			</div>
@@ -200,7 +200,7 @@ while($row1 = $stmt1->fetch(PDO::FETCH_OBJ)){
 		<div class='col-5'>";
 		echo"<button class='btn btn-outline-success float-left' type='button' data-toggle='collapse' data-target='#collapseCat$cid' aria-expanded='true' aria-controls='collapseCat$cid'><strong>";
 		echo $row1->tx_nome;
-		echo"</strong></button>
+		echo" <i class='nav-icon cui-chevron-bottom'></i></strong></button>
 		</div>
 		 
 		<div class='col-7'>";
@@ -224,7 +224,7 @@ while($row1 = $stmt1->fetch(PDO::FETCH_OBJ)){
     
 	</div>
 
-    <div id='collapseCat$cid' class='collapse show' aria-labelledby='headingCat$cid' data-parent='#accordion'>
+    <div id='collapseCat$cid' class='collapse' aria-labelledby='headingCat$cid' data-parent='#accordion'>
       <div class='card-body'>
 	  
 	  <!-- MAIN WHILE FOR ATIVIDADE CATEGORIA -->";

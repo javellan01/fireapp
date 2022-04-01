@@ -190,9 +190,9 @@ echo" <div class='container-fluid'>
 
 			echo "<div class='progress-group'>";
 			  if($row->cs_estado == 0) 
-					echo "<div class='progress-group-header align-items-end' style='color: #27b;'><div><a class='btn btn-ghost-primary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Ativo)</strong></a></div>";
+					echo "<div class='progress-group-header align-items-end' style='color: #27b;'><div><a class='btn btn-ghost-primary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Ativo) <i class='nav-icon cui-chevron-right'></i></strong></a></div>";
 			  if($row->cs_estado == 1) 
-					echo "<div class='progress-group-header align-items-end' style='color: #777;'><div><a class='btn btn-ghost-secondary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Encerrado)</strong></a></div>";
+					echo "<div class='progress-group-header align-items-end' style='color: #777;'><div><a class='btn btn-ghost-secondary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Encerrado) <i class='nav-icon cui-chevron-right'></i></strong></a></div>";
 			  
 					echo "<div class='ml-auto'>Atividades Concluídas: " . $fisico->execpercent ."%</div></div>";
 					echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
