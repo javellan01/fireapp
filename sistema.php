@@ -67,6 +67,7 @@
 	$cnpj = $_SESSION['login'];
 	$uid = $_SESSION['userid'];
 	$cliente = $_SESSION['cliente'];
+	
 	function moeda($num){
 		return number_format($num,2,',','.');
 	}
@@ -77,7 +78,7 @@
 	<span class="navbar-toggler-icon"></span>
 	</button>
 		<a class="navbar-brand pl-3" href="http://www.firesystems-am.com.br/">
-		<img src="./img/fire.png" alt="FIRE-AM" height="47">
+		<img src="./img/fire.png" alt="FIRE-AM" height="42">
 		</a>
 			<ul class="nav navbar-nav ml-auto">
 				<li class="nav-item px-3">
@@ -198,8 +199,8 @@ echo" <div class='container-fluid'>
 					echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
 					echo "<div class='progress-bar progress-bar-striped bg-warning' role='progressbar' style='width: ". $fisico->execpercent ."%' aria-valuenow='". $fisico->execpercent ."' aria-valuemin='0' aria-valuemax='100'>". $fisico->execpercent ."%</div></div>";	
 
-			  echo "<div class='ml-auto'>Financeiro: (" . $row->percent ."%) - ";
-			  echo "R$ " . moeda($row->medido_total) . " / " . moeda($row->nb_valor) . "</div></div>";
+			  echo "<div class='ml-auto'>Progresso Financeiro: ";
+			  // echo "R$ " . moeda($row->medido_total) . " / " . moeda($row->nb_valor) . "</div></div>";
 			  echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
 			  echo "<div class='progress-bar progress-bar-striped bg-success' role='progressbar' style='width: ". $row->percent ."%' aria-valuenow='". $row->percent ."' aria-valuemin='0' aria-valuemax='100'>". $row->percent ."%</div>
 			  </div>
