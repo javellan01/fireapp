@@ -9,6 +9,7 @@
 		<div class='card-header'><div class="row mt-1"><div class="col-9">
 		<h3><i class='nav-icon cui-list'></i> Detalhes do Pedido: 
 <?php
+session_start(); 
 
 	
 require("./DB/conn.php");
@@ -18,20 +19,25 @@ $pid = $_REQUEST["pid"];
 $balance = array();
 $measure = 0.00;
 $mid = 0;	
+$cuid = $_SESSION['cuserid'];
 //Carrega dados do pedido
-$pedido = getPedidoData($conn, $pid);
-//Carrega dados do pedido
+$pedido = getPedidoData($conn,$pid);
+$acesso = getUserAcesso($conn,$cuid);
 
+//Carrega dados do pedido
 echo $pedido->tx_codigo."</h3>
 					</div>
 					<div class='col-3'>
+						
 					</div>
 				</div>
 			</div> 	
 <div class='card-body border border-primary rounded-top'>
-	<div class='row justify-content-between'>
-	
-				</div>
+	<div class='row justify-content-between'>";
+if($acesso == 0)echo"<div class='col-8'>
+	<h4>Total do Pedido:<label class='border border-secondary rounded p-1'> R$ ".moeda($pedido->nb_valor)."</label> - Retenção: <label class='border border-secondary rounded p-1'>R$ ".moeda($pedido->retencao)." (".$pedido->nb_retencao."%)</label>
+	</div>";
+echo"</div>
 <div class='row'>
 	<div class='col-6'>
 	<h4><i class='nav-icon cui-location-pin'></i> Área: <label class='border border-secondary rounded p-1'>".$pedido->tx_local."</label></h4>
@@ -54,8 +60,10 @@ echo $pedido->tx_codigo."</h3>
 </div>			
 </div>
 
-<div class='card-body'>";
+<div class='card-body'>
+	<div class='card-text mb-3' id='week'>
 
+	</div>";
 // Carrega as somas result das medições
 $medicoes = getMedicoes($conn, $pid);
 
@@ -84,7 +92,9 @@ echo"
   <div class='card-body'>
   <div class='row mb-2'>
   <div class='col-6'>
-	<h5 class='card-title'>Medido: ".calcularPercent($medicao->v_medido,$pedido->nb_valor,1)."% do Pedido.</h5>	
+	<h5 class='card-title'>Valor Medido: ";
+	if($acesso == 0)echo"R$ ".moeda($medicao->v_medido)." - ";
+	echo calcularPercent($medicao->v_medido,$pedido->nb_valor,1)."% do Pedido.</h5>	
 	<h5 class='cart-text'>Status: ".getStatus($conn,$medicao->id_medicao)."</h5>
 	<h5 class='cart-text'>Responsável: ".$medicao->tx_name."</h5>
 	<p class='card-text'>Nota: ".$medicao->tx_nota." - Emissão: ".$medicao->dt_emissao."Vencimento: ".$medicao->dt_vencimento."</p>
@@ -97,8 +107,8 @@ echo"
 if($medicao->cs_aprovada == 0){	
 echo"
 	<button type='button' class='btn btn-success mx-2' data-toggle='modal' 
-	data-target='#modalAprov'><i class='nav-icon cui-check'></i> Aprovar Medição</button>
-	<button type='button' class='btn btn-warning mx-2' data-toggle='modal'>
+	data-target='#modalAprovar'><i class='nav-icon cui-check'></i> Aprovar Medição</button>
+	<button type='button' class='btn btn-warning mx-2' data-toggle='modal'
 	data-target='#modalRevisar'><i class='nav-icon cui-pencil'></i> Solicitar Revisão</button>";
 	
 }
@@ -128,9 +138,9 @@ echo"
 					<th>Item</th>
 					<th>Atividade</th>
 					<th>Categoria</th>
-					<th>Progresso Medido</th>
-					
-				</tr>
+					<th>Progresso Medido</th>";
+	if($acesso == 0)echo"<th>Valor Medido</th>";			
+		echo"</tr>
 			</thead>
 			<tbody>";
 		$medidas = getMedicaoResume($conn,$pid,$mid);
@@ -140,17 +150,22 @@ echo"
 					<th>".$item.".</th>
 					<th>".$medida->tx_descricao."</th>
 					<th>".$medida->tx_nome."</th>
-					<th>".moeda($medida->percent)."%</th>
-					
-				</tr>";
+					<th>".moeda($medida->percent)."%</th>";
+	if($acesso == 0)echo"<th>R$ ".moeda($medida->nb_valor)."</th>";
+			echo"</tr>";
 			$item += 1;	
 			}
-	echo"
-			<tr>
+	echo"	<tr>
 				<th></th><th></th><th></th><th></th><th></th>
-			</tr>
-				
-			</tbody>
+			</tr>";
+	if($acesso == 0)echo"<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th>Total:</th>
+						<th style='font-weight: 500;'>R$ ".moeda($medicao->v_medido)."
+					</tr>";
+	echo"</tbody>
 			</table>		
 			</h6>	
 			</div>
@@ -207,11 +222,13 @@ echo" <i class='nav-icon cui-chevron-bottom'></i></strong></button>
 		echo"  <div class='callout callout-danger m-0'>
 					<small class='text-muted text-danger'>Progresso Categoria</small><br>
 					<strong class='h5 text-danger text-nowrap'>".$cat->execpercent."%</strong>";
+		if($acesso == 0)echo" - (R$ ".moeda($cat->progresso)."/ ".moeda($cat->nbvalor).")";
 		}
 		else{
 		echo"  <div class='callout callout-success m-0'>
 					<small class='text-muted text-success'>Progresso Categoria</small><br>
 					<strong class='h5 text-success text-nowrap'>".$cat->execpercent."%</strong>";
+		if($acesso == 0)echo" - (R$ ".moeda($cat->progresso)."/ ".moeda($cat->nbvalor).")";			
 		}
 echo"		
 	</div>
@@ -294,9 +311,9 @@ echo"
 		<label class='border border-success rounded p-1'>Finalizadas: ".$encerradas."</label>
 		</h5>
 	</div>
-	<div class='col-6 text-right'>
-		
-	</div>
+	<div class='col-6 text-right'>";
+if($acesso == 0) echo"<h5 class='mb-0'>Saldo: R$ ".moeda($subtotal)."</h5>";		
+echo"	</div>
 </div>	
 
 </div>
@@ -307,3 +324,90 @@ echo"
 
 ?>
 </div></div>
+
+	<!-- Modal Enviar Notificação  -->
+	<div class="modal" style="text-align: left" id="modalAprovar" tabindex="-1" role="dialog" aria-labelledby="modalAprovar" aria-hidden="true">
+						  <div class="modal-dialog modal-lg" role="document">
+							<div class="modal-content">
+							  <div class="modal-header border border-danger rounded-top">
+								<h5 class="modal-title">Aprovação da Medição <span id="ordemMedicao"></span> - <?php echo $pedido->tx_codigo;?></h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </div>
+							  <div class="modal-body"><h5>
+	<form class="container">
+	<h5>Ao aprovar esta medição o sistema enviará e-mail de noticação para o endereço a seguir: </h5>
+<?php 
+	
+		echo"<div class='input-group mb-3'>
+				<div class='input-group-prepend'>
+				<div class='input-group-text'>
+				<span class='input-group-text'>Márcio Kunzendorff</span>
+			</div>
+		<input type='text' class='form-control' value='marcio@firesystems-am.com.br'></input>
+	</div>";
+
+	
+	?>
+	
+	<button type='button' class='btn btn-success float-right mx-2' id='sendAprovacao' value='1'>
+			<i class='nav-icon cui-check'></i> Aprovar Medição</button>
+	</div>
+				<div class="modal-footer">
+				</div>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"><i class='nav-icon cui-ban'></i> Fechar</button>
+			</div>
+			</div>
+		</div>
+						
+					</div>
+				</div>
+			</div>	
+		</div>
+		
+	</div>
+
+<!-- Modal Revisar  -->
+<div class="modal" style="text-align: left" id="modalRevisar" tabindex="-1" role="dialog" aria-labelledby="modalRevisar" aria-hidden="true">
+						  <div class="modal-dialog modal-lg" role="document">
+							<div class="modal-content">
+							  <div class="modal-header border border-danger rounded-top">
+								<h5 class="modal-title">Solicitação de Revisão da Medição <span id="ordemMedicao"></span> - <?php echo $pedido->tx_codigo;?></h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								  <span aria-hidden="true">&times;</span>
+								</button>
+							  </div>
+							  <div class="modal-body"><h5>
+	<form class="container">
+	<h5>Ao solicitar a revisão desta medição o sistema enviará e-mail de noticação para o endereço a seguir: </h5>
+<?php 
+	
+		echo"<div class='input-group mb-3'>
+				<div class='input-group-prepend'>
+				<div class='input-group-text'>
+				<span class='input-group-text'>Márcio Kunzendorff</span>
+			</div>
+		<input type='text' class='form-control' value='marcio@firesystems-am.com.br'></input>
+		<input type='textarea' class='form-control' placeholder='Insira Mensagem'></input>
+	</div>";
+
+	
+	?>
+	
+	<button type='button' class='btn btn-warning float-right mx-2' id='sendRevisar' value='1'>
+			<i class='nav-icon cui-pencil'></i> Solicitar Revisão</button>
+	</div>
+				<div class="modal-footer">
+				</div>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"><i class='nav-icon cui-ban'></i> Fechar</button>
+			</div>
+			</div>
+		</div>
+						
+					</div>
+				</div>
+			</div>	
+		</div>
+		
+	</div>

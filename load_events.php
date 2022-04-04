@@ -38,9 +38,9 @@ function cat_color($cat){
 	
 	//Calendario.php --- Carrega todas as atividades desse cliente no calendario
 	$id_cliente = $_SESSION["userid"];
+	
 	echo "[ ";
-	//$mes = $_GET['mes'];
-	//$ano = $_GET['ano'];
+
 	if($_SESSION["catuser"] == 0){
 		try{
 	$stmt = $conn->query("SELECT a.*,p.tx_codigo,cat.tx_nome FROM atividade a INNER JOIN pedido p ON a.id_pedido = p.id_pedido INNER JOIN categoria cat ON a.id_categoria = cat.id_categoria WHERE p.id_cliente = ".$id_cliente."");
@@ -53,14 +53,16 @@ function cat_color($cat){
 	if($_SESSION["catuser"] == 1){
 		$id_usuario = $_SESSION["cuserid"];
 		try{
-	$stmt = $conn->query("SELECT a.*,p.tx_codigo,cat.tx_nome FROM atividade a INNER JOIN pedido p ON a.id_pedido = p.id_pedido INNER JOIN categoria cat ON a.id_categoria = cat.id_categoria WHERE p.id_cliente_usr = ".$id_usuario."");
+	$stmt = $conn->query("SELECT a.*,p.tx_codigo,cat.tx_nome,cat.tx_color 
+						FROM atividade a INNER JOIN pedido p ON a.id_pedido = p.id_pedido 
+						INNER JOIN categoria cat ON a.id_categoria = cat.id_categoria 
+						WHERE p.id_cliente_usr = ".$id_usuario."");
 			}
 		catch(PDOException $e)
 			{
 			echo "Erro: " . $e->getMessage();
 			}
 		}
-		
 			
 		if($e == null){
 		
@@ -71,7 +73,7 @@ function cat_color($cat){
 					$status = 'Encerrada';
 				}	
 				if($row->cs_finalizada == 0){ 
-					$color = cat_color($row->id_categoria);
+					$color = $row->tx_color;
 					$status = 'Ativa';
 					}
 				$url = "#";

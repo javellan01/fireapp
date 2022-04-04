@@ -1,5 +1,9 @@
 <?php
 
+function moeda($num){
+    return number_format($num,2,',','.');
+}
+
 function clienteLastAccess($conn,$uid){
     $stmt = $conn->prepare("UPDATE cliente SET last_access = current_timestamp() WHERE id_cliente = :uid");	
 
@@ -32,13 +36,15 @@ function getPedidosCliente($conn,$uid){
 
 }
 
-function getPedidosUsrCliente($conn,$uid,$cuid){
-$stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
-                    INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente
-                    INNER JOIN cliente_usr AS cu ON p.id_cliente_usr = cu.id_usuario
-                    INNER JOIN usuario AS u ON p.id_usu_resp = u.id_usuario
-                    INNER JOIN v_sum_pedido_total AS v ON p.id_pedido = v.id_pedido
-                    WHERE p.id_cliente = $uid AND p.id_cliente_usr = $cuid ORDER BY p.tx_codigo ASC;");
+function getPedidosUsrCliente($conn,$cuid){
+
+    $stmt = $conn->query("SELECT p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent 
+    FROM acesso_pedido AS ap 
+    INNER JOIN pedido AS p ON ap.id_pedido = p.id_pedido
+    INNER JOIN cliente_usr AS cu ON ap.id_cliente_usr = cu.id_usuario
+    INNER JOIN usuario AS u ON p.id_usu_resp = u.id_usuario
+    INNER JOIN v_sum_pedido_total AS v ON p.id_pedido = v.id_pedido
+    WHERE ap.id_usuario IS NULL AND ap.id_cliente_usr = $cuid ORDER BY p.tx_codigo ASC;");
                     
     $data = $stmt->fetchAll(PDO::FETCH_OBJ);
 

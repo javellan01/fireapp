@@ -1,6 +1,11 @@
 <?php
 
-	function cat_color($cat){
+function data_usql($data) {
+    $ndata = substr($data, 8, 2) ."/". substr($data, 5, 2) ."/".substr($data, 0, 4);
+    return $ndata;
+}
+
+function cat_color($cat){
 		$color = '#343236';
 		if($cat == 9) $color = '#777777';
 		if($cat == 5) $color = '#ce3500';
@@ -14,13 +19,14 @@
 			
 		return $color;
 	}
-	
-function getEventUsuResponsavel($conn,$uid){
+//Events em andamento no Pedido on foi registrada alguma execução na atividade	
+function getEventsPedido($conn,$pid){
 
     $stmt = $conn->query("SELECT a.*,p.tx_codigo,cat.tx_nome, cat.tx_color FROM atividade a 
                         INNER JOIN pedido p ON a.id_pedido = p.id_pedido 
                         INNER JOIN categoria cat ON a.id_categoria = cat.id_categoria 
-                        WHERE p.id_usu_resp = $uid AND a.cs_finalizada = 0 AND NOT a.dt_inicio = '00-00-0000'");
+                        INNER JOIN v_sum_atividade_exec vsa ON a.id_atividade = vsa.id_atividade
+                        WHERE p.id_pedido = $pid AND a.cs_finalizada = 0 AND NOT vsa.qtd_sum IS NULL AND NOT a.dt_inicio = '00-00-0000'");
     
     $data = $stmt->fetchAll(PDO::FETCH_OBJ);
 
@@ -28,9 +34,9 @@ function getEventUsuResponsavel($conn,$uid){
 
 	}
 			
-function fillUCalendar($conn,$uid){
+function fillAtividadesCalendar($conn,$pid){
 
-    $data = getEventUsuResponsavel($conn,$uid);
+    $data = getEventsPedido($conn,$pid);
     echo "[ ";
     foreach($data as $event){
         if($event->cs_finalizada == 1) {

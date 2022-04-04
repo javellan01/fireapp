@@ -16,11 +16,22 @@ function calcularPercent($parcel,$total,$precision){
     return number_format($result,$precision,',','.');
 }
 function getPedidoData($conn, $pid){
+
     $stmt = $conn->query("SELECT p.*, (( p.nb_valor / 100) * p.nb_retencao) AS retencao, c.tx_nome FROM pedido p INNER JOIN cliente c ON p.id_cliente = c.id_cliente WHERE p.id_pedido = $pid");
 
     $data = $stmt->fetch(PDO::FETCH_OBJ);
 	
     return $data;
+
+}
+
+function getUserAcesso($conn,$uid){
+
+    $stmt = $conn->query("SELECT nb_category_user FROM cliente_usr WHERE id_usuario = $uid");
+
+    $data = $stmt->fetch(PDO::FETCH_OBJ);
+	
+    return $data->nb_category_user;
 
 }
 

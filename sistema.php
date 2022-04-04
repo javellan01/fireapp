@@ -9,6 +9,12 @@
 		header("Location: login.php"); 
 		exit; 
 	} 
+	require("./DB/conn.php");
+	require("./controller/sistemaController.php");
+	
+	$cnpj = $_SESSION['login'];
+	$uid = $_SESSION['userid'];
+	$cliente = $_SESSION['cliente'];	
 
 ?>
 <!DOCTYPE html>
@@ -43,12 +49,44 @@
 		<script src="./assets/js/docs.min.js"></script>
 		<script src="./assets/js/vue.min.js"></script>
 		<script src="./assets/js/toastr.min.js"></script>
+		<script src="./assets/js/moment.min.js"></script>
+		<script src="./dist/js/fullcalendar.min.js"></script>
+		<script src="./dist/js/locale/pt-br.js"></script>
 		<script>
 		function atvPhp(str) {
 			var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 			document.getElementById("main").innerHTML = this.responseText;
+			
+			$('#week-agenda').fullCalendar({
+			  defaultView: 'basicWeek',	
+			  aspectRatio: 5,
+			  defaultDate: '<?php echo date("Y-m-d", $_SERVER['REQUEST_TIME']);?>',
+			  eventRender: function(eventObj, $el) {
+				  $el.popover({
+					title: eventObj.title+', Pedido: '+eventObj.pedido,
+					content: eventObj.periodo,
+					trigger: 'hover',
+					placement: 'top',
+					container: 'body'
+				});
+			  },
+			  editable: false,
+			  eventLimit: true,
+			  events: 	{
+					url: './load_events_p.php',
+					type: 'POST',
+					data:{
+						pid: str,
+					}
+						} ,	  
+			  weekNumbers: true,
+			  weekNumberTitle: 'W',
+			  weekNumberCalculation: 'ISO'
+			});
+
+
 
 			}
 			
@@ -61,29 +99,18 @@
 	<!-- AJAX Scriping for loading dynamically PHP on server -->
 		
 </head>
-<?php 
-	require("./DB/conn.php");
-	require("./controller/sistemaController.php");
-	$cnpj = $_SESSION['login'];
-	$uid = $_SESSION['userid'];
-	$cliente = $_SESSION['cliente'];
-	
-	function moeda($num){
-		return number_format($num,2,',','.');
-	}
-?>
+
 <body class="app header-fixed sidebar-md-show sidebar-fixed">
 <header class='app-header navbar' style='background: #2f353a; border-bottom: 4px solid #a60117;'>
 	<button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
 	<span class="navbar-toggler-icon"></span>
 	</button>
 		<a class="navbar-brand pl-3" href="http://www.firesystems-am.com.br/">
-		<img src="./img/fire.png" alt="FIRE-AM" height="42">
+		<img src="./img/fire.png" alt="FIRE-AM" height="40">
 		</a>
 			<ul class="nav navbar-nav ml-auto">
 				<li class="nav-item px-3">
 				<?php
-				if($_SESSION['catuser'] == 0) echo "<a class='nav-link text-warning' style='font-weight: 500;' href=''><i class='nav-icon'><img src='./img/logo/".substr($_SESSION['cliente'],0,3).".png' height='35'></i>".$_SESSION['cliente']."</a>";
 				if($_SESSION['catuser'] == 1) echo "<a class='nav-link text-warning' style='font-weight: 500;' href=''><i class='nav-icon'><img src='./img/logo/".substr($_SESSION['cliente'],0,3).".png' height='35'></i><span> </span><i class='nav-icon cui-user'></i><span> </span>".$_SESSION['login']."</a>";
 				?>
 				</li>
@@ -144,36 +171,20 @@
 	</nav>
 
 <?php
-	if($_SESSION['catuser'] == 0){
-	clienteLastAccess($conn,$uid);
-	//getPedidosCliente($conn,$uid);
-	$stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
-							INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente
-							INNER JOIN cliente_usr AS cu ON p.id_cliente_usr = cu.id_usuario
-							INNER JOIN usuario AS u ON p.id_usu_resp = u.id_usuario
-							INNER JOIN v_sum_pedido_total AS v ON p.id_pedido = v.id_pedido
-							WHERE p.id_cliente = " . $uid . " ORDER BY p.tx_codigo ASC;");
-		}
-	// Carrega os pedidos e coloca nos cards MODO USER
-	if($_SESSION['catuser'] == 1){
-	$cuid = $_SESSION['cuserid'];
-	usrclienteLastAccess($conn,$cuid);
-	//getPedidosUsrCliente($conn,$uid,$cuid);
-	$stmt = null;
-	$stmt = $conn->query("SELECT c.id_cliente, p.tx_local, p.tx_codigo, p.id_pedido, p.cs_estado, u.tx_name, cu.tx_nome, v.medido_total, v.nb_valor, FORMAT(((v.medido_total/v.nb_valor)*100),2) AS percent FROM cliente As c 
-							INNER JOIN pedido AS p ON c.id_cliente = p.id_cliente
-							INNER JOIN cliente_usr AS cu ON p.id_cliente_usr = cu.id_usuario
-							INNER JOIN usuario AS u ON p.id_usu_resp = u.id_usuario
-							INNER JOIN v_sum_pedido_total AS v ON p.id_pedido = v.id_pedido
-							WHERE p.id_cliente = " . $uid . " AND p.id_cliente_usr = " . $cuid . " ORDER BY p.tx_codigo ASC;");		
-	}
+	
+// Carrega os pedidos e coloca nos cards MODO USER Unico Modo Agora
+if($_SESSION['catuser'] == 1){
+$cuid = $_SESSION['cuserid'];
+usrclienteLastAccess($conn,$cuid);
+$pedidos = getPedidosUsrCliente($conn,$cuid);
+			
+	
 echo" <div class='container-fluid'>
 				<div class='card'>
 					<div class='card-header'><div class='row mt-1'><div class='col-7'>";
-		if($_SESSION['catuser'] == 0) echo "<h3><cite>".$cliente."</cite> - Lista de Pedidos:</h3><h5>CNPJ: ".$cnpj."</h5>";
-		if($_SESSION['catuser'] == 1) echo "<h3><cite>".$cliente."</cite> - Lista de Pedidos:</h3><h5>".$_SESSION['login'].", olá!</h5>";
-					echo"</div>
-							<div class='col-5'>
+		echo "<h3><cite>".$cliente."</cite> - Lista de Pedidos:</h3><h5>".$_SESSION['login'].", olá!</h5>";
+				echo"</div>
+						<div class='col-5'>
 						<h3 class='btn btn-outline-success float-right'>Data Atual: ".date("d/m/Y", $_SERVER['REQUEST_TIME'])."</h3>
 					</div>
 						</div>
@@ -182,40 +193,40 @@ echo" <div class='container-fluid'>
 						<div class='col-12'>	
 					<div class='card-body'>";
 	
-	if($stmt->rowCount() == 0){
+	if(count($pedidos) == 0){
 		echo"<h4><cite> Ainda não há pedidos cadastrados! <cite></h4>";}
 	else{  
 		echo"<h4><cite> Pedidos disponíveis para consulta: </cite></h4>";
-		while($row = $stmt->fetch(PDO::FETCH_OBJ)){
-			$fisico = getProgressoFisico($conn,$row->id_pedido);
+		
+		foreach($pedidos as $pedido){
+			$fisico = getProgressoFisico($conn,$pedido->id_pedido);
 
-			echo "<div class='progress-group'>";
-			  if($row->cs_estado == 0) 
-					echo "<div class='progress-group-header align-items-end' style='color: #27b;'><div><a class='btn btn-ghost-primary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Ativo) <i class='nav-icon cui-chevron-right'></i></strong></a></div>";
-			  if($row->cs_estado == 1) 
-					echo "<div class='progress-group-header align-items-end' style='color: #777;'><div><a class='btn btn-ghost-secondary' href='javascript:atvPhp(".$row->id_pedido.");' role='button'><strong>Pedido: " . $row->tx_codigo . " (Encerrado) <i class='nav-icon cui-chevron-right'></i></strong></a></div>";
-			  
+			echo "<div class='card-text border-top border-secondary'><div class='progress-group mt-2'>";
+			  if($pedido->cs_estado == 0) 
+					echo "<div class='progress-group-header align-items-end' style='color: #27b;'><div><a class='btn btn-ghost-primary'
+					 href='javascript:atvPhp(".$pedido->id_pedido.");' role='button'><strong>Pedido: " . $pedido->tx_codigo . " (Ativo) <i class='nav-icon cui-chevron-right'></i></strong></a></div>";
+			  if($pedido->cs_estado == 1) 
+					echo "<div class='progress-group-header align-items-end' style='color: #777;'><div><a class='btn btn-ghost-secondary'
+					 href='javascript:atvPhp(".$pedido->id_pedido.");' role='button'><strong>Pedido: " . $pedido->tx_codigo . " (Encerrado) <i class='nav-icon cui-chevron-right'></i></strong></a></div>";
 					echo "<div class='ml-auto'>Atividades Concluídas: " . $fisico->execpercent ."%</div></div>";
 					echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
 					echo "<div class='progress-bar progress-bar-striped bg-warning' role='progressbar' style='width: ". $fisico->execpercent ."%' aria-valuenow='". $fisico->execpercent ."' aria-valuemin='0' aria-valuemax='100'>". $fisico->execpercent ."%</div></div>";	
 
 			  echo "<div class='ml-auto'>Progresso Financeiro: ";
-			  // echo "R$ " . moeda($row->medido_total) . " / " . moeda($row->nb_valor) . "</div></div>";
+			  // echo "R$ " . moeda($pedido->medido_total) . " / " . moeda($pedido->nb_valor) . "</div></div>";
 			  echo "<div class='progress-group-bars'> <div class='progress progress-lg'>";
-			  echo "<div class='progress-bar progress-bar-striped bg-success' role='progressbar' style='width: ". $row->percent ."%' aria-valuenow='". $row->percent ."' aria-valuemin='0' aria-valuemax='100'>". $row->percent ."%</div>
+			  echo "<div class='progress-bar progress-bar-striped bg-success' role='progressbar' style='width: ". $pedido->percent ."%' aria-valuenow='". $pedido->percent ."' aria-valuemin='0' aria-valuemax='100'>". $pedido->percent ."%</div>
 			  </div>
 			  </div>
 			  </div>
-			<p class='mb-0 mt-1 ml-auto'><cite> Resp. FireSystems: ".$row->tx_name." - Resp. Cliente: ".$row->tx_nome."</cite></p>
-			<p class='mb-0 mt-1 ml-auto'><cite>Local: ".$row->tx_local."</cite></p>
-		</div>";
+			<p class='mb-0 mt-1 ml-auto'><cite> Resp. FireSystems: ".$pedido->tx_name." - Resp. Cliente: ".$pedido->tx_nome."</cite></p>
+			<p class='mb-0 mt-1 ml-auto'><cite>Local: ".$pedido->tx_local."</cite></p>
+		</div></div>";
 		}
 	}
 	echo"</div>
 	</div></div></div>";
-
-$stmt = null;
-$stmt0 = null;
+}
 ?>
 			</div>
 		</main>
