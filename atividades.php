@@ -6,6 +6,7 @@
 	</nav>
 	<div class="container-fluid">
 		<div class="card">
+			
 		<div class='card-header'><div class="row mt-1"><div class="col-9">
 		<h3><i class='nav-icon cui-list'></i> Detalhes do Pedido: 
 <?php
@@ -28,14 +29,15 @@ $acesso = getUserAcesso($conn,$cuid);
 echo $pedido->tx_codigo."</h3>
 					</div>
 					<div class='col-3'>
-						
+					<input type='text' class='form-control' id='formMPed' value=$pid name='idPedido' hidden></input>
 					</div>
 				</div>
 			</div> 	
 <div class='card-body border border-primary rounded-top'>
+
 	<div class='row justify-content-between'>";
 if($acesso == 0)echo"<div class='col-8'>
-	<h4>Total do Pedido:<label class='border border-secondary rounded p-1'> R$ ".moeda($pedido->nb_valor)."</label> - Retenção: <label class='border border-secondary rounded p-1'>R$ ".moeda($pedido->retencao)." (".$pedido->nb_retencao."%)</label>
+	<h4><i class='nav-icon cui-pie-chart'></i> Total do Pedido:<label class='border border-secondary rounded p-1'> R$ ".moeda($pedido->nb_valor)."</label> - Retenção: <label class='border border-secondary rounded p-1'>R$ ".moeda($pedido->retencao)." (".$pedido->nb_retencao."%)</label>
 	</div>";
 echo"</div>
 <div class='row'>
@@ -61,13 +63,25 @@ echo"</div>
 </div>
 
 <div class='card-body'>
+<p id='dataChart'></p>
+<canvas class='px-4 my-4 shadow rounded' id='myChart' style='display: block; box-sizing: border-box; height: 400px; width: 100%;'>
+
+</canvas>";
+$fisico = getProgressoFisico($conn,$pedido->id_pedido);
+
+	echo "<div class='row mx-1 my-2 '><div class='callout callout-primary b-t-1 b-r-1 b-b-1 m-1 col-12 float-left shadow rounded'> <div class='progress-group'>";
+	echo "<div class='progress-group-header align-items-center text-center my-1' style='color: #27b;'><strong><i class='nav-icon cui-chart'></i> Progresso da Obra: </strong></div>";
+	echo "<div class='progress-group-bars'> <div class='progress progress-lg' style='height: 1.25rem'>";
+	echo "<div class='progress-bar progress-bar-striped bg-warning' role='progressbar' style='width: ". $fisico->execpercent ."%; color:'black'; 
+		aria-valuenow='". $fisico->execpercent ."' aria-valuemin='0' aria-valuemax='100'><strong class='text-primary' >". $fisico->execpercent ."%</strong></div></div></div></div></div></div>";  
+	echo"		
 	<div class='card-text mb-3' id='week'>
 
 	</div>";
 // Carrega as somas result das medições
 $medicoes = getMedicoes($conn, $pid);
 
-echo"<div class='accordion border border-danger rounded-top mb-3' id='accordion'>
+echo"<div class='accordion border border-danger rounded-top mb-3 shadow rounded' id='accordion'>
 <div class='card mb-0'>
 	<div class='card-header' id='headingMedicao'>
 		<h5 class='mb-0'>
@@ -89,7 +103,7 @@ echo"
 <div class='card border border-light mb-3'>
   <h5 class='card-header'>Medição ".$mid." - ".data_usql($medicao->dt_data)."</h5>
   
-  <div class='card-body'>
+  <div class='card-body' style='overflow-y: scroll; overflow-x: clip; max-height: 600px;'>
   <div class='row mb-2'>
   <div class='col-6'>
 	<h5 class='card-title'>Valor Medido: ";
@@ -97,7 +111,7 @@ echo"
 	echo calcularPercent($medicao->v_medido,$pedido->nb_valor,1)."% do Pedido.</h5>	
 	<h5 class='cart-text'>Status: ".getStatus($conn,$medicao->id_medicao)."</h5>
 	<h5 class='cart-text'>Responsável: ".$medicao->tx_name."</h5>
-	<p class='card-text'>Nota: ".$medicao->tx_nota." - Emissão: ".$medicao->dt_emissao."Vencimento: ".$medicao->dt_vencimento."</p>
+	<p class='card-text'>Nota: ".$medicao->tx_nota." - Data de Emissão: ".$medicao->dt_emissao.", Data de Vencimento: ".$medicao->dt_vencimento."</p>
 	</div>
 	<div class='col-6'>".getMessage($conn,$medicao->id_medicao)."</div>
 	</div>
@@ -203,7 +217,7 @@ $cpercent = $count = $execpercent = $medpercent = $balpercent = 0;
 
 //Inicia accordion para cada categoria
 echo"
-<div class='accordion border border-success rounded-top mb-3' id='accordion'>
+<div class='accordion border border-success rounded-top mb-3 shadow rounded' id='accordion'>
 <div class='card mb-0'>
 <div class='card-header' id='headingCat$cid'>
 <h5 class='mb-0'>
@@ -239,7 +253,7 @@ echo"
 </div>
 
 <div id='collapseCat$cid' class='collapse' aria-labelledby='headingCat$cid' data-parent='#accordion'>
-<div class='card-body'>
+<div class='card-body' style='overflow-y: scroll; overflow-x: clip; max-height: 600px;'>
 
 <!-- MAIN FOREACH FOR ATIVIDADE CATEGORIA -->";
 $encerradas = 0;
@@ -274,9 +288,9 @@ echo"
 	
 	<div class='progress-group-prepend'>";
   if($atividade->cs_finalizada == 0) 
-			echo "<div class='progress-group-header align-items-end'><button type='button' class='btn btn-outline-primary p-1'><strong>" . $atividade->tx_descricao . "</strong></div>";
+			echo "<div class='progress-group-header align-items-end my-1'><button type='button' class='btn btn-outline-primary p-1'><strong>" . $atividade->tx_descricao . "</strong></div>";
   if($atividade->cs_finalizada == 1) 
-			echo "<div class='progress-group-header align-items-end' style='color: #777;'><strong><i class='nav-icon cui-check'></i> " . $atividade->tx_descricao . " (Encerrada)</strong></div>";
+			echo "<div class='progress-group-header align-items-end my-1' style='color: #777;'><strong><i class='nav-icon cui-check'></i> " . $atividade->tx_descricao . " (Encerrada)</strong></div>";
   $percent = ($atividade->qtd_sum / $atividade->nb_qtd) * 100;
   $percent = round($percent,1);
   echo "<div class='ml-auto'>Progresso: " . $atividade->qtd_sum . " / " . $atividade->nb_qtd ." ". $atividade->tx_tipo . "</div>";

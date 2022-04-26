@@ -155,7 +155,7 @@
 	<div class='container-fluid'>
 				<div class="card">
 			<div class="card-header"><div class='row mt-1'><div class='col-9'>
-				<h3><cite><?php echo $cliente;?></cite> - Calendário de Atividades:</h3>
+				<h3><cite><i class='nav-icon cui-calendar'></i> <?php echo $cliente;?></cite> - Calendário de Atividades:</h3>
 			</div>
 			<div class='col-3'>
 			<h3 class='btn btn-outline-success float-right'>Data Atual: <?php echo date("d/m/Y", $_SERVER['REQUEST_TIME']);?></h3>

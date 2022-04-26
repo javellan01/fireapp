@@ -165,4 +165,42 @@ function getAtividade($conn, $id){
 
     return $data;
 }
+//progresso da obra executada
+function getProgressoFisico($conn,$pid){
+    
+    $stmt = $conn->query("SELECT vs.id_pedido, FORMAT(((SUM(vs.progresso) / SUM(vs.nb_valor)) *100),1) as execpercent
+    FROM v_categoria_sums vs 
+    WHERE vs.id_pedido = $pid GROUP BY vs.id_pedido");
+    
+    $data = $stmt->fetch(PDO::FETCH_OBJ);
+    
+    return $data;
+    }    
+//CARREGA E CRIA OBJETO JSON PARA DESENHAR O GRAFICO DO PEDIDO
+function getGraphProgressoPedido($conn,$pid){
+
+        $stmt = $conn->query("SELECT COUNT(*) AS total,
+        COUNT(CASE WHEN done = 1 THEN 1 END) AS pronto,
+        COUNT(CASE WHEN done < 1 AND done > 0.75 THEN 1 END) AS quasepronto,
+        COUNT(CASE WHEN done <= 0.75 AND done > 0.50 THEN 1 END) AS meiocheio,
+        COUNT(CASE WHEN done <= 0.50 AND done > 0.25 THEN 1 END) AS meiovazio,
+        COUNT(CASE WHEN done <= 0.25 AND done > 0 THEN 1 END) AS umquarto,
+        COUNT(CASE WHEN done = 0 THEN 1 END) AS semprogresso
+        FROM (SELECT qtd_sum /nb_qtd AS done FROM v_categoria_sums WHERE id_pedido = $pid) AS tabela001");
+    
+        $data = $stmt->fetch(PDO::FETCH_OBJ);
+    
+        $output = array();
+        
+        $output[0]=$data->total;
+        $output[1]=$data->pronto;
+        $output[2]=$data->quasepronto;
+        $output[3]=$data->meiocheio;
+        $output[4]=$data->meiovazio;
+        $output[5]=$data->umquarto;
+        $output[6]=$data->semprogresso;
+        
+        echo json_encode($output);
+    
+    }
 ?>

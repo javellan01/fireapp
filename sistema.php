@@ -46,58 +46,17 @@
 		<script src="./dist/js/bootstrap.js"></script>
 		<script src="./assets/js/perfect-scrollbar.min.js"></script>
 		<script src="./assets/js/coreui.min.js"></script>
-		<script src="./assets/js/docs.min.js"></script>
 		<script src="./assets/js/vue.min.js"></script>
 		<script src="./assets/js/toastr.min.js"></script>
 		<script src="./assets/js/moment.min.js"></script>
 		<script src="./dist/js/fullcalendar.min.js"></script>
 		<script src="./dist/js/locale/pt-br.js"></script>
-		<script>
-		function atvPhp(str) {
-			var xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-			document.getElementById("main").innerHTML = this.responseText;
-			
-			$('#week-agenda').fullCalendar({
-			  defaultView: 'basicWeek',	
-			  aspectRatio: 5,
-			  defaultDate: '<?php echo date("Y-m-d", $_SERVER['REQUEST_TIME']);?>',
-			  eventRender: function(eventObj, $el) {
-				  $el.popover({
-					title: eventObj.title+', Pedido: '+eventObj.pedido,
-					content: eventObj.periodo,
-					trigger: 'hover',
-					placement: 'top',
-					container: 'body'
-				});
-			  },
-			  editable: false,
-			  eventLimit: true,
-			  events: 	{
-					url: './load_events_p.php',
-					type: 'POST',
-					data:{
-						pid: str,
-					}
-						} ,	  
-			  weekNumbers: true,
-			  weekNumberTitle: 'W',
-			  weekNumberCalculation: 'ISO'
-			});
-
-
-
-			}
-			
-			};
-			xhttp.open("GET", "atividades.php?pid="+str, true);
-			xhttp.send();
-			}
-		</script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+		
 		
 	<!-- AJAX Scriping for loading dynamically PHP on server -->
-		
+		<script src="./assets/js/central.js"></script>
 </head>
 
 <body class="app header-fixed sidebar-md-show sidebar-fixed">
@@ -182,7 +141,7 @@ $pedidos = getPedidosUsrCliente($conn,$cuid);
 echo" <div class='container-fluid'>
 				<div class='card'>
 					<div class='card-header'><div class='row mt-1'><div class='col-7'>";
-		echo "<h3><cite>".$cliente."</cite> - Lista de Pedidos:</h3><h5>".$_SESSION['login'].", olá!</h5>";
+		echo "<h3><i class='nav-icon cui-home'></i><cite> ".$cliente."</cite> - Lista de Pedidos:</h3><h5>".$_SESSION['login'].", olá!</h5>";
 				echo"</div>
 						<div class='col-5'>
 						<h3 class='btn btn-outline-success float-right'>Data Atual: ".date("d/m/Y", $_SERVER['REQUEST_TIME'])."</h3>
@@ -196,7 +155,7 @@ echo" <div class='container-fluid'>
 	if(count($pedidos) == 0){
 		echo"<h4><cite> Ainda não há pedidos cadastrados! <cite></h4>";}
 	else{  
-		echo"<h4><cite> Pedidos disponíveis para consulta: </cite></h4>";
+		echo"<h4><i class='nav-icon cui-list'></i><cite> Pedidos disponíveis para consulta:</cite></h4>";
 		
 		foreach($pedidos as $pedido){
 			$fisico = getProgressoFisico($conn,$pedido->id_pedido);

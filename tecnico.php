@@ -133,7 +133,7 @@
 echo" <div class='container-fluid'>
 				<div class='card'>
 					<div class='card-header'><div class='row mt-1'><div class='col-9'>
-				<h3><cite>".$cliente."</cite> - Arquivo Técnico:</h3>
+				<h3><cite><i class='nav-icon cui-location-pin'></i> ".$cliente."</cite> - Arquivo Técnico:</h3>
 			</div>
 							<div class='col-3'>
 						<h3 class='btn btn-outline-success float-right'>Data Atual: ".date("d/m/Y", $_SERVER['REQUEST_TIME'])."</h3>

@@ -22,7 +22,7 @@ $data = getUser($conn,$login,$senha);
 						
 
 
-if(count($data) == 1 ){
+if($data){
    	$uid = $data->id_cliente;
 	$cliente = $data->cliente;
 	$cuid = $data->id_usuario;
