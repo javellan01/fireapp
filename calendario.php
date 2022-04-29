@@ -87,8 +87,8 @@
 	<button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
 	<span class="navbar-toggler-icon"></span>
 	</button>
-		<a class="navbar-brand pl-3" href="http://www.firesystems-am.com.br/">
-		<img src="./img/fire.png" alt="FIRE-AM" width="180" height="47">
+	<a class="navbar-brand pl-3" href="http://www.firesystems-am.com.br/">
+		<img src="./img/fire.png" alt="FIRE-AM" height="40">
 		</a>
 			<ul class="nav navbar-nav ml-auto">
 				<li class="nav-item px-3">

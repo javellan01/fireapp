@@ -63,4 +63,17 @@ function getProgressoFisico($conn,$pid){
     return $data;
     }    
 
+    
+function getArquivosPedido($conn,$pid){
+    
+    $stmt = $conn->query("SELECT * 
+                        FROM arq_tecnico
+                        WHERE id_pedido = $pid");
+
+    $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+    
+    return $data;   
+
+}    
+
 ?>

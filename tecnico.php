@@ -42,17 +42,18 @@
 		<script src="./assets/js/vue.min.js"></script>
 		<script src="./assets/js/toastr.min.js"></script>
 		
-		
 	<!-- AJAX Scriping for loading dynamically PHP on server -->
 		<script src="./assets/js/central.js"></script>
 			
 </head>
 <?php 
 	require("./DB/conn.php");
-	$cnpj = $_SESSION['login'];
-	$uid = $_SESSION['userid'];
-	$cliente = $_SESSION['cliente'];
+	require("./controller/sistemaController.php");
 	
+	$cuid = $_SESSION['cuserid'];
+	$pedidos = getPedidosUsrCliente($conn,$cuid);
+	$cliente = $_SESSION['cliente'];	
+
 	function data_usql($data) {
 		$ndata = substr($data, 8, 2) ."/". substr($data, 5, 2) ."/".substr($data, 0, 4);
 		return $ndata;
@@ -63,8 +64,8 @@
 	<button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
 	<span class="navbar-toggler-icon"></span>
 	</button>
-		<a class="navbar-brand pl-3" href="http://www.firesystems-am.com.br/">
-		<img src="./img/fire.png" alt="FIRE-AM" width="180" height="47">
+	<a class="navbar-brand pl-3" href="http://www.firesystems-am.com.br/">
+		<img src="./img/fire.png" alt="FIRE-AM" height="40">
 		</a>
 			<ul class="nav navbar-nav ml-auto">
 				<li class="nav-item px-3">
@@ -133,7 +134,7 @@
 echo" <div class='container-fluid'>
 				<div class='card'>
 					<div class='card-header'><div class='row mt-1'><div class='col-9'>
-				<h3><cite><i class='nav-icon cui-location-pin'></i> ".$cliente."</cite> - Arquivo Técnico:</h3>
+				<h3><cite><i class='nav-icon cui-paperclip'></i> ".$cliente."</cite> - Arquivo Técnico:</h3>
 			</div>
 							<div class='col-3'>
 						<h3 class='btn btn-outline-success float-right'>Data Atual: ".date("d/m/Y", $_SERVER['REQUEST_TIME'])."</h3>
@@ -144,74 +145,82 @@ echo" <div class='container-fluid'>
 						<div class='col-12'>	
 					<div class='card-body'>";
 	
-		
-	// Carrega os pedidos e coloca nos cards
-	if($_SESSION['catuser'] == 0){
-	$stmt = $conn->query("SELECT p.tx_local, p.tx_codigo, p.cs_estado, arq.id_pedido FROM arq_tecnico As arq 
-							INNER JOIN pedido AS p ON arq.id_pedido = p.id_pedido
-							WHERE p.id_cliente = " . $uid . " GROUP BY arq.id_pedido ORDER BY p.tx_codigo ASC");
-					}
-	if($_SESSION['catuser'] == 1){
-	$stmt = $conn->query("SELECT p.tx_local, p.tx_codigo, p.cs_estado, arq.id_pedido FROM arq_tecnico As arq 
-							INNER JOIN pedido AS p ON arq.id_pedido = p.id_pedido
-							WHERE p.id_cliente_usr = " . $_SESSION['cuserid'] . " GROUP BY arq.id_pedido ORDER BY p.tx_codigo ASC");
-					}
-	if($stmt->rowCount() == 0){
-		echo"<h4><cite> Ainda não há arquivos vinculado aos pedidos! <cite></h4>";}
+	if(count($pedidos) == 0){
+		echo"<h4><cite> Ainda não há pedidos vinculado a este perfil! <cite></h4>";
+	}
 	else{
- 
 		echo"<h4><cite> Arquivos disponíveis para consulta: </cite></h4>";
-		while($row = $stmt->fetch(PDO::FETCH_OBJ)){
-			$pid=$row->id_pedido;     																		
-			echo "<div class='accordion border border-success rounded-top mb-3' id='accordion'>
+
+	foreach($pedidos AS $pedido){
+		$pid=$pedido->id_pedido;   
+		$arquivos = getArquivosPedido($conn,$pid);	  																		
+			echo "<div class='accordion border border-light rounded-top mb-3 shadow rounded' id='accordion'>
 			  <div class='card mb-0'>
 				<div class='card-header' id='headingCat$pid'>
 				  <h5 class='mb-0'>
 					<div class='row'>
 						<div class='col-8'>
-		<button class='btn btn-ghost-primary float-left' type='button' data-toggle='collapse' data-target='#collapseCat$pid' aria-expanded='true' aria-controls='collapseCat$pid'><strong>Pedido ".$row->tx_codigo."</strong></button>
+		<button class='btn btn-ghost-primary float-left' type='button' data-toggle='collapse' data-target='#collapseCat$pid' aria-expanded='true' aria-controls='collapseCat$pid'><strong>Pedido ".$pedido->tx_codigo." <i class='nav-icon cui-chevron-bottom'></i></strong></button>
 						</div>
 						<div class='col-4'>
-							<p class='mb-0 mt-1 ml-auto'><cite>Local: ".$row->tx_local."</cite></p>
+							<p class='mb-0 mt-1 ml-auto'><cite>Local: ".$pedido->tx_local."</cite></p>
 						</div>		
 					</div></h5>
 				</div>
-					<div id='collapseCat$pid' class='collapse show' aria-labelledby='headingCat$pid' data-parent='#accordion'>
+					<div id='collapseCat$pid' class='collapse' aria-labelledby='headingCat$pid' data-parent='#accordion'>
 				<div class='card-body'>
 					<div class='row align-items-center'>
 						<div class='col-12 p-2'>
-		<table class='table table-responsive-lg table-striped'>
+		<table class='table table-responsive-lg table-striped shadow rounded'>
 			<thead>
 				<tr>
-					<th>Nome Arquivo</th>
-					<th>Descrição</th>
-					<th>Data Upload</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>";			
+				<th>Nome do Arquivo</th>
+				<th>Descrição</th>
+				<th>Tipo do Arquivo</th>
+				<th>Tamanho</th>
+				<th>Data de Upload</th>
 				
-
-			$stmt0 = $conn->query("SELECT arq.* FROM arq_tecnico arq WHERE arq.id_pedido = ".$pid." ORDER BY arq.dt_upload DESC");
-				
-				while($row0 = $stmt0->fetch(PDO::FETCH_OBJ)){
-					echo"<tr>
-							<th>".$row0->tx_arquivo."</th>
-							<th>".$row0->tx_documento."</th>
-							<th>".data_usql($row0->dt_upload)."</th>
-							<th><a class='btn btn-outline-primary' href='download.php?pe=".$row->tx_codigo."&fname=".$row0->tx_arquivo."'>Download</a></th>
-						</tr>";
-			
-					}		
+			</tr>
+		</thead>
+		<tbody>";	
+		if(count($arquivos) == 0){
+			echo"<tr><td><cite> Ainda não há arquivos vinculado a este pedido! <cite><td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			</tr>";
+		}
+		else{
+		foreach($arquivos AS $arquivo){
 	
-		echo"	</tbody>	
-		</table>
-					</div></div>
+			if($arquivo->nb_tamanho >= 1024 && $arquivo->nb_tamanho < 1048576){
+				$tamanho = 1*$arquivo->nb_tamanho/1024;
+				$tamanho = number_format($tamanho,1,'.',',').' kB';
+			
+			} else if($arquivo->nb_tamanho >= 1048576){
+				$tamanho = 1*$arquivo->nb_tamanho/1024/1024;
+				$tamanho = number_format($tamanho,1,'.',',').' MB';
+			}else $tamanho = $arquivo->nb_tamanho.' bytes';
+			// Aloca os medicaos e cria a list
+			echo"<tr>
+					<td><a class='btn btn-ghost-primary' href='download.php?token=".md5(session_id())."&data=".md5($pid)."&fname=".$arquivo->tx_arquivo."&type=tecnico'><i class='nav-icon cui-cloud-download'></i> ".$arquivo->tx_arquivo."</a></td>
+					<td>".$arquivo->tx_documento."</td>
+					<td>".$arquivo->tx_version."</td>
+					<td>".$tamanho."</td>
+					<td>".data_usql($arquivo->dt_upload)."</td>
+				</tr>";	
+			
+			}		
+		}	
+		echo"</tbody>	
+				</table>
+				</div></div>
 					
 			</div>   
 		</div>
 			<div class='card-footer'>
-			<h5 class='mb-0 ml-auto'><label class='border border-primary rounded p-1'>Total Arquivos: ".$stmt0->rowCount()."</label></h5>
+			<h5 class='my-1 ml-auto'></h5>
 			</div>
 		</div></div>";
 		}
@@ -219,8 +228,6 @@ echo" <div class='container-fluid'>
 	echo"</div>
 	</div></div></div>";
 
-$stmt = null;
-$stmt0 = null;
 ?>
 			</div>
 		</main>
@@ -229,10 +236,10 @@ $stmt0 = null;
 </div>
 	
 	
-	<footer class="app-footer">
+<footer class="app-footer">
 		<div>
 		<a href="http://www.firesystems-am.com.br">Fire Systems</a>
-		<span>© 2018 Produtos e Serviços Contra Incêndio</span>
+		<span>© 2018-2022 Produtos e Serviços Contra Incêndio</span>
 		</div>
 		<div class="ml-auto">
 		<span>Sistema de Gerenciamento Online</span>
