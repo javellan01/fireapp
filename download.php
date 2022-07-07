@@ -17,41 +17,30 @@ if(!isset($_SESSION["login"]) && !isset($_SESSION["pedido"]))
 		$path = 'https://admin.firesystems-am.com.br/storage/'.$type.'/'.$id;
 		// file path
 		$file = $path.'/'.$fname.'';
-		if(is_dir($path)){
-		
-			if(is_file($file)){
-			// Maximum size of chunks (in bytes).
-			$maxRead = 1 * 1024 * 1024; // 1MB
-		
-			// Open a file in read mode.
-			$fh = fopen($file, 'r');
-		
-			// These headers will force download on browser,
-			// and set the custom file name for the download, respectively.
-			header('Content-Type: application/octet-stream');
-			header('Content-Disposition: attachment; filename="' . $fname . '"');
-		
-			// Run this until we have read the whole file.
-			// feof (eof means "end of file") returns `true` when the handler
-			// has reached the end of file.
-			while (!feof($fh)) {
-				// Read and output the next chunk.
-				echo fread($fh, $maxRead);
-				// Flush the output buffer to free memory.
-				ob_flush();
-			}
-			// Exit to make sure not to output anything else.
-			exit;
+
+		$fh = fopen($file, 'r');
+
+		if($fh){
+
+			$maxRead = 1 * 512 * 1024;
+				
+				header('Content-Type: application/octet-stream');
+				header('Content-Disposition: attachment; filename="' . $fname . '"');
+
+				while (!feof($fh)) {
+					
+					echo fread($fh, $maxRead);
+					
+					ob_flush();
+				}
+			exit('Arquivo Encontrado!');
 			}
 			else{
 				header('HTTP/1.1 404 Not Found: File Not Found.');
-				exit;
+				exit('Arquivo não encontrado!');
+				
 			}
-		}
-		else{
-			header('HTTP/1.1 404 Not Found: Directory does not Exists.');
-			exit;
-		}
+		
 	} 
 
 ?>

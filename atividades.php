@@ -351,16 +351,15 @@ echo"	</div>
 							  </div>
 							  <div class="modal-body"><h5>
 	<form class="container">
-	<h5>Ao aprovar esta medição o sistema enviará e-mail de noticação para o endereço a seguir: </h5>
-<?php 
+	<h5>Ao aprovar esta medição, o sistema enviará e-mail de noticação para o(s) endereço(s) a seguir: </h5>
+<?php 	
 	
-		echo"<div class='input-group mb-3'>
+		echo"<div class='input-group mb-2'>
 				<div class='input-group-prepend'>
-				<div class='input-group-text'>
 				<span class='input-group-text'>Márcio Kunzendorff</span>
 			</div>
 		<input type='text' class='form-control' value='marcio@firesystems-am.com.br'></input>
-	</div>";
+		</div>";
 
 	
 	?>
@@ -369,8 +368,8 @@ echo"	</div>
 			<i class='nav-icon cui-check'></i> Aprovar Medição</button>
 	</div>
 				<div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"><i class='nav-icon cui-ban'></i> Fechar</button>
 				</div>
-				<button type="button" class="btn btn-secondary" data-dismiss="modal"><i class='nav-icon cui-ban'></i> Fechar</button>
 			</div>
 			</div>
 		</div>
@@ -394,27 +393,28 @@ echo"	</div>
 							  </div>
 							  <div class="modal-body"><h5>
 	<form class="container">
-	<h5>Ao solicitar a revisão desta medição o sistema enviará e-mail de noticação para o endereço a seguir: </h5>
+	<h5>Ao solicitar a revisão desta medição, o sistema enviará e-mail de noticação para o(s) endereço(s) a seguir: </h5>
 <?php 
 	
-		echo"<div class='input-group mb-3'>
+		echo"<div class='input-group mb-2'>
 				<div class='input-group-prepend'>
-				<div class='input-group-text'>
 				<span class='input-group-text'>Márcio Kunzendorff</span>
-			</div>
-		<input type='text' class='form-control' value='marcio@firesystems-am.com.br'></input>
-		<input type='textarea' class='form-control' placeholder='Insira Mensagem'></input>
-	</div>";
+				</div>
+			<input type='text' class='form-control' value='marcio@firesystems-am.com.br'></input>
+			</div>";
 
 	
 	?>
 	
-	<button type='button' class='btn btn-warning float-right mx-2' id='sendRevisar' value='1'>
+	<label for="mensagemRevisao">Motivo da Solicitação: <cite>Limite de caracteres: <span id='mensagemCounter'></span>.</label>
+	<textarea class='form-control' id='mensagemRevisao' rows='4' maxlength='255' placeholder='Informe aqui o motivo da solicitação.'></textarea>
+
+	<button type='button' class='btn btn-warning float-right mx-2 my-2' id='sendRevisar' value='1'>
 			<i class='nav-icon cui-pencil'></i> Solicitar Revisão</button>
 	</div>
-				<div class="modal-footer">
-				</div>
-				<button type="button" class="btn btn-secondary" data-dismiss="modal"><i class='nav-icon cui-ban'></i> Fechar</button>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-block" data-dismiss="modal"><i class='nav-icon cui-ban'></i> Fechar</button>
+			</div>
 			</div>
 			</div>
 		</div>

@@ -84,6 +84,12 @@
 				atvPhp(str);
 			});
 			
+			$('#mensagemRevisao').on('keyup', function (){
+
+				$('span#mensagemCounter').text(256 - $(this).val().length);
+
+			});
+
 			$('#modalUpdate').on('show.bs.modal', function (event) {
 			  var button = $(event.relatedTarget);
 			  var atividade = button.data('atividade');

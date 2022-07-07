@@ -167,7 +167,7 @@ echo" <div class='container-fluid'>
 						</div>		
 					</div></h5>
 				</div>
-					<div id='collapseCat$pid' class='collapse' aria-labelledby='headingCat$pid' data-parent='#accordion'>
+					<div id='collapseCat$pid' class='collapse show' aria-labelledby='headingCat$pid' data-parent='#accordion'>
 				<div class='card-body'>
 					<div class='row align-items-center'>
 						<div class='col-12 p-2'>
